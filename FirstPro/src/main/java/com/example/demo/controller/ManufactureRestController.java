@@ -197,21 +197,29 @@ public class ManufactureRestController {
 	return new ResponseEntity<ManufacturingUnit>(manuFromDB, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/async")
+   @GetMapping(path = "/async")
     public ResponseEntity<?> asyncMethod() {
 	LocalDate todaysDate = LocalDate.now();
 	Set<ManufacturingUnit> todaysReadyProduct = manufacutreRepository.getAllReadyProductOfToday(todaysDate);
 	for (ManufacturingUnit mfu : todaysReadyProduct) {
 	    String productName = mfu.getProductName();
 	    Product product = productRepository.getProductByName(productName);
-	    
-	    if(product != null &&  (product.getManufacturedDate().isEqual(mfu.getManufacturedEndDate()))){ // sysnc already done no need to do it again ...
+
+	    if (product != null && (product.getManufacturedDate().isEqual(mfu.getManufacturedEndDate()))) { // sysnc
+													    // already
+													    // done no
+													    // need to
+													    // do it
+													    // again ...
 		continue;
 	    }
-	    
-	    if (product != null ) { // If available in invent
+
+	    if (product != null) { // If available in invent
 		Long proudctCount = (Long) (product.getAvailableProductCount() + 20);
+		System.out.println(proudctCount);
 		productRepository.updateProductInInventoryTable(proudctCount, productName);
+		productRepository.udateManufacutreDate(mfu.getManufacturedEndDate(), productName);
+		productRepository.udpateAvailibalityDate(mfu.getManufacturedEndDate(), productName);
 
 		// updating the pending customer...!!!
 		Set<CustomerProduct> pendingCustomers = customerProductRepo.findPendingCustomers(productName,
@@ -221,8 +229,9 @@ public class ManufactureRestController {
 			break;
 		    }
 		    customerProductRepo.updatePendingCustomerStatus("SUCCESS", cp.getEmailId());
-		    productRepository.updateProductInInventoryTable(proudctCount - cp.getProductQuantity(),
-			    productName);  
+		  //  Product product1 = productRepository.getProductByName(productName); // no need;
+		    productRepository.updateProductInInventoryTable(
+			    proudctCount - cp.getProductQuantity(), productName);
 		}
 	    } else {// If that product Not available in the inventory .... register a new product in
 		    // that inventory
