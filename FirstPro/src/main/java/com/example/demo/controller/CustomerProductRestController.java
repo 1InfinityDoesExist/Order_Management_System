@@ -83,6 +83,7 @@ public class CustomerProductRestController {
 	@ApiOperation(value = "Get CustomerProduct By ID", notes = "Retrieve Data of CusomerProudct By ID", response = CustomerProduct.class)
 	public ResponseEntity<?> getCustomerProduct(
 			@ApiParam(value = "id", required = true, example = "123") @PathVariable(value = "id", required = true) Long id) {
+		logger.info("******CustomerProduct Get Method************");
 		CustomerProduct cp = cusService.getCustomerProductById(id);
 		if (cp == null) {
 			return new ResponseEntity<String>("Nothing Found with id:- " + id, HttpStatus.BAD_REQUEST);
@@ -95,6 +96,7 @@ public class CustomerProductRestController {
 	@ResponseStatus(code = HttpStatus.OK, reason = "SuccessFully Retieved All CustomerProduct From The DB")
 	@ApiOperation(value = "Retrieve All CustomerProduct", notes = "Get All The CustomerProduct ", response = CustomerProduct.class, responseContainer = "LIST")
 	public ResponseEntity<?> getAllCusotmerProduct() {
+		logger.info("************Inside Customer Get Method**********");
 		List<CustomerProduct> cpList = cusService.getCustomerProductAll();
 		if (cpList.size() == 0) {
 			return new ResponseEntity<String>("Nothing Found ", HttpStatus.BAD_REQUEST);
@@ -108,6 +110,7 @@ public class CustomerProductRestController {
 	@ApiOperation(value = "Remove Resource From The DB", notes = "Successfully Removed Resources From The DB", response = String.class)
 	public ResponseEntity<?> deleteCustomerProductById(
 			@ApiParam(value = "id", required = true, example = "123") @PathVariable(value = "id") Long id) {
+		logger.info("**************CustomerProduct delete Method********");
 		CustomerProduct cp = cusService.getCustomerProductById(id);
 		if (cp == null) {
 			return new ResponseEntity<String>("No CustomerProduct found for id:-" + id, HttpStatus.BAD_REQUEST);
@@ -124,6 +127,7 @@ public class CustomerProductRestController {
 	public ResponseEntity<?> updateCustomerProduct(@Valid @RequestBody String cp,
 			@ApiParam(value = "id", required = true, example = "123") @PathVariable(value = "id") Long id)
 			throws ParseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		logger.info("**********************Inside update Method of CusotmerProduct*********************");
 		CustomerProduct cpFromDB = cusService.getCustomerProductById(id);
 		boolean deliveryFlag = cp.contains("productDeliveryDate");
 		if (cpFromDB == null) {

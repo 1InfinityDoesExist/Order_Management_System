@@ -151,8 +151,8 @@ public class ManufactureRestController {
 		if (manu == null) {
 			return new ResponseEntity<String>("No ManufacturingUnit with id:- " + id, HttpStatus.BAD_REQUEST);
 		}
-		manufactureService.deleteManufaturingUnit(id);
-		return new ResponseEntity<String>("Successfully Deleteed ManufacturingUnit with id:- " + id, HttpStatus.OK);
+		String response = manufactureService.deleteManufaturingUnit(id);
+		return new ResponseEntity<String>(response, HttpStatus.OK);
 	}
 
 	@PatchMapping(path = "update/{id}")

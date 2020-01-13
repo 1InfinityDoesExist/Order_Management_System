@@ -35,66 +35,66 @@ import com.example.demo.util.ReflectionUtil;
 @CrossOrigin
 public class ProductRestController {
 
-    @Autowired
-    private ProductService productService;
-    ReflectionUtil refUtil = ReflectionUtil.getInstance();
+	@Autowired
+	private ProductService productService;
+	ReflectionUtil refUtil = ReflectionUtil.getInstance();
 
-    @PostMapping(path = "create")
-    public ResponseEntity<?> saveProduct(@Valid @RequestBody Product product, BindingResult result) {
+	@PostMapping(path = "create")
+	public ResponseEntity<?> saveProduct(@Valid @RequestBody Product product, BindingResult result) {
 
-	if (result != null  && result.hasErrors()) {
-	    Map<String, String> error = new HashMap<String, String>();
-	    for (FieldError fieldError : result.getFieldErrors()) {
-		error.put(fieldError.getField(), fieldError.getDefaultMessage());
-	    }
-	    return new ResponseEntity<Map<String, String>>(error, HttpStatus.BAD_REQUEST);
+		if (result != null && result.hasErrors()) {
+			Map<String, String> error = new HashMap<String, String>();
+			for (FieldError fieldError : result.getFieldErrors()) {
+				error.put(fieldError.getField(), fieldError.getDefaultMessage());
+			}
+			return new ResponseEntity<Map<String, String>>(error, HttpStatus.BAD_REQUEST);
+		}
+		Product p = productService.saveProduct(product);
+		return new ResponseEntity<Product>(p, HttpStatus.CREATED);
 	}
-	Product p = productService.saveProduct(product);
-	return new ResponseEntity<Product>(p, HttpStatus.CREATED);
-    }
 
-    @GetMapping(path = "get/{id}")
-    public ResponseEntity<?> getProductById(@PathVariable(value = "id") Long id) {
-	Product product = productService.getProductById(id);
-	if (product == null) {
-	    return new ResponseEntity<String>("No product with Id:- " + id + "Found", HttpStatus.BAD_REQUEST);
+	@GetMapping(path = "get/{id}")
+	public ResponseEntity<?> getProductById(@PathVariable(value = "id") Long id) {
+		Product product = productService.getProductById(id);
+		if (product == null) {
+			return new ResponseEntity<String>("No product with Id:- " + id + "Found", HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<Product>(product, HttpStatus.OK);
 	}
-	return new ResponseEntity<Product>(product, HttpStatus.OK);
-    }
 
-    @GetMapping(path = "get")
-    public ResponseEntity<?> getAllProduct() {
-	List<Product> allProduct = productService.getAllProduct();
-	if (allProduct.size() == 0) {
-	    return new ResponseEntity<String>("No Product Found", HttpStatus.BAD_REQUEST);
+	@GetMapping(path = "get")
+	public ResponseEntity<?> getAllProduct() {
+		List<Product> allProduct = productService.getAllProduct();
+		if (allProduct.size() == 0) {
+			return new ResponseEntity<String>("No Product Found", HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<List<Product>>(allProduct, HttpStatus.OK);
 	}
-	return new ResponseEntity<List<Product>>(allProduct, HttpStatus.OK);
-    }
 
-    @DeleteMapping(path = "delete/{id}")
-    public ResponseEntity<?> deleteProductById(@PathVariable(value = "id") Long id) {
-	Product product = productService.getProductById(id);
-	if (product == null) {
-	    return new ResponseEntity<String>("No Product with ID:- " + id + "Found", HttpStatus.BAD_REQUEST);
+	@DeleteMapping(path = "delete/{id}")
+	public ResponseEntity<?> deleteProductById(@PathVariable(value = "id") Long id) {
+		Product product = productService.getProductById(id);
+		if (product == null) {
+			return new ResponseEntity<String>("No Product with ID:- " + id + "Found", HttpStatus.BAD_REQUEST);
+		}
+		String response = productService.deleteProductById(id);
+		return new ResponseEntity<String>(response, HttpStatus.OK);
 	}
-	productService.deleteProductById(id);
-	return new ResponseEntity<String>("Successfully Deleted Product with id:- " + id, HttpStatus.OK);
-    }
 
-    @PatchMapping(path = "/update/{id}")
-    public ResponseEntity<?> updateProduct(@Valid @RequestBody String product, @PathVariable(value = "id") Long id)
-	    throws ParseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-	Product productFromDB = productService.getProductById(id);
-	if (productFromDB == null) {
-	    return new ResponseEntity<String>("No product with id:- " + id, HttpStatus.BAD_REQUEST);
+	@PatchMapping(path = "/update/{id}")
+	public ResponseEntity<?> updateProduct(@Valid @RequestBody String product, @PathVariable(value = "id") Long id)
+			throws ParseException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Product productFromDB = productService.getProductById(id);
+		if (productFromDB == null) {
+			return new ResponseEntity<String>("No product with id:- " + id, HttpStatus.BAD_REQUEST);
+		}
+		JSONParser parser = new JSONParser();
+		JSONObject obj = (JSONObject) parser.parse(product);
+		for (Iterator iterator = ((Map<String, String>) obj).keySet().iterator(); iterator.hasNext();) {
+			String prop = (String) iterator.next();
+			refUtil.getSetterMethod("Product", prop).invoke(productFromDB, obj.get(prop));
+		}
+		productService.saveProduct(productFromDB);
+		return new ResponseEntity<Product>(productFromDB, HttpStatus.OK);
 	}
-	JSONParser parser = new JSONParser();
-	JSONObject obj = (JSONObject) parser.parse(product);
-	for (Iterator iterator = ((Map<String, String>) obj).keySet().iterator(); iterator.hasNext();) {
-	    String prop = (String) iterator.next();
-	    refUtil.getSetterMethod("Product", prop).invoke(productFromDB, obj.get(prop));
-	}
-	productService.saveProduct(productFromDB);
-	return new ResponseEntity<Product>(productFromDB, HttpStatus.OK);
-    }
 }

@@ -59,6 +59,11 @@ public class CustomerProductService {
 	}
 
 	public void deleteCustoProduct(Long id) {
-		custoproRepository.deleteById(id);
+		try {
+			custoproRepository.deleteById(id);
+		} catch (final MyException ex) {
+			logger.info("Exception:-" + ex.getMessage());
+		}
+
 	}
 }
