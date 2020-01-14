@@ -36,7 +36,7 @@ public class Customer extends BaseEntity implements Serializable {
 
 	@Column(name = "customer_name")
 	@ApiModelProperty(notes = "Name Of The Customer")
-	private String CustomerName;
+	private String customerName;
 
 	@NotBlank(message = "EmailID cannot be null or blank")
 	@Column(name = "email", unique = true)
@@ -78,7 +78,7 @@ public class Customer extends BaseEntity implements Serializable {
 	public Customer(String customerName, @NotBlank(message = "EmailID cannot be null or blank") String email,
 			Set<Product> product, LocalDate billingDate, String notes) {
 		super();
-		CustomerName = customerName;
+		this.customerName = customerName;
 		this.email = email;
 		this.product = product;
 		this.billingDate = billingDate;
@@ -86,11 +86,11 @@ public class Customer extends BaseEntity implements Serializable {
 	}
 
 	public String getCustomerName() {
-		return CustomerName;
+		return customerName;
 	}
 
 	public void setCustomerName(String customerName) {
-		CustomerName = customerName;
+		customerName = customerName;
 	}
 
 	public String getEmail() {
@@ -129,7 +129,7 @@ public class Customer extends BaseEntity implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((CustomerName == null) ? 0 : CustomerName.hashCode());
+		result = prime * result + ((customerName == null) ? 0 : customerName.hashCode());
 		result = prime * result + ((billingDate == null) ? 0 : billingDate.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
@@ -146,10 +146,10 @@ public class Customer extends BaseEntity implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Customer other = (Customer) obj;
-		if (CustomerName == null) {
-			if (other.CustomerName != null)
+		if (customerName == null) {
+			if (other.customerName != null)
 				return false;
-		} else if (!CustomerName.equals(other.CustomerName))
+		} else if (!customerName.equals(other.customerName))
 			return false;
 		if (billingDate == null) {
 			if (other.billingDate != null)
@@ -176,7 +176,7 @@ public class Customer extends BaseEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Customer [CustomerName=" + CustomerName + ", email=" + email + ", product=" + product + ", billingDate="
+		return "Customer [CustomerName=" + customerName + ", email=" + email + ", product=" + product + ", billingDate="
 				+ billingDate + ", notes=" + notes + "]";
 	}
 
